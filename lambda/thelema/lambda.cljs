@@ -10,5 +10,5 @@
 (def ^:export audio-search
   (async-lambda-fn
    (fn [{:keys [term] :as args} context]
-     (util/log "audio-search" term (clj->js args))
+     (util/log "audio-search" (str "'" term "'") args)
      (async/into [] (youtube/search! term)))))
