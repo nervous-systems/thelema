@@ -13,9 +13,9 @@
   (if-not (= port -1)
     u
     (assoc u :port
-           (case protocol
-             "http" 80
-             "https" 443))))
+      (case protocol
+        "http" 80
+        "https" 443))))
 
 (defn req->node [{{:keys [query host port path]} :endpoint :keys [headers method] :as req}]
   (cond->
@@ -45,18 +45,24 @@
     (.end node-req body)
     ch))
 
-(defn channel-request! [req]
-  (go-catching
-    (try
-      (let [ch    (request! req)
-            resp  (<? ch)
-            body  (<? (glossop.util/reduce str "" ch))]
-        (assoc resp :body body))
-      (catch js/Error e
-        {:error e}))))
+(defn channel-request! [req & [{:keys [chan close?]}]]
+  (cond-> (go-catching
+            (try
+              (let [ch    (request! req)
+                    resp  (<? ch)
+                    body  (<? (glossop.util/reduce str "" ch))]
+                (assoc resp :body body))
+              (catch js/Error e
+                ;; The eulalie code wants {:error e} - figure this out before
+                ;; chopping this into an external library
+                e)))
+    chan (async/pipe chan close?)))
 
-(defn http-get! [url]
+(defn get! [url]
   (util/log "HTTP GET" (str url))
   (channel-request!
    {:method :get
-    :endpoint (cond-> url (string? url) url/url)}))
+    :endpoint (cond-> url (string? url) url/url)}
+   {:chan (async/chan
+           1
+           (map #(cond-> % (not (glossop/error? %)) :body)))}))

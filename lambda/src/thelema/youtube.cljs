@@ -46,23 +46,35 @@
      batch
      chan
      (fn [v out] (with-formats! v {:chan out :limit limit}))
-     (async/to-chan videos)
+     videos
      close?)
     chan))
 
-(defn search! [q & [{:keys [results formats chan close?]
+(defn search-term->videos!
+  [term & [{:keys [results chan close?] :or {close? true}}]]
+  (let [chan (or chan (async/chan))]
+    (go-catching
+      (try
+        (let [videos
+              (-> term
+                  (video-search-url {:max-results results})
+                  http/get!
+                  <?
+                  util/json->map
+                  parse-search-results)]
+          (async/onto-chan chan videos close?))
+        (catch :default e
+          (util/channel-error e chan close?))))
+    chan))
+
+(defn search! [term & [{:keys [results formats chan close?]
                      :or   {formats 5 results 10 close? true}}]]
   (let [chan (or chan (async/chan))]
     (go-catching
       (try
-        (let [results
-              (-> q
-                  (video-search-url {:max-results results})
-                  http/http-get! <?
-                  :body
-                  util/json->map
-                  parse-search-results)]
-          (format-many! results {:limit formats :chan chan :close? close?}))
+        (-> term
+            (search-term->videos! {:results results})
+            (format-many! {:limit formats :chan chan :close? close?}))
         (catch :default e
           (util/channel-error e chan close?))))
     chan))
