@@ -31,9 +31,6 @@
             close?)))))
     chan))
 
-(defn formatted-chan [video]
-  (async/chan 1 (map (fn [fs] (assoc video :format fs)))))
-
 (defn with-formats!
   [video & [{:keys [chan close? limit] :or {close? true}}]]
   (cond-> (go-catching

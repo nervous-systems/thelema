@@ -15,6 +15,3 @@
               (catch :default e#
                 (cljs.test/is (nil? e#))))
             (done#))))))
-
-
-
