@@ -22,9 +22,9 @@
                                     "resources/public/js/thelema.js"
                                     :target-path]
   :cljs-lambda
-  {:cljs-build-id "lambda-dev"
+  {:cljs-build-id "lambda-prod"
    :defaults
-   {:role "arn:aws:iam::151963828411:role/cljs-lambda-default"
+   {:role "arn:aws:iam::510355070671:role/cljs-lambda-default"
     :create true
     :timeout 60}
    :functions
@@ -41,12 +41,18 @@
                         :optimizations :none
                         :source-map true}}
             {:id "lambda-dev"
-             :source-paths ["lambda"]
+             :source-paths ["lambda/src"]
              :compiler {:output-to "target/dev/thelema.js"
                         :output-dir "target/dev"
                         :target :nodejs
                         :optimizations :none
-                        :source-map true}}]}
+                        :source-map true}}
+            {:id "lambda-prod"
+             :source-paths ["lambda/src"]
+             :compiler {:output-to "target/prod/thelema.js"
+                        :output-dir "target/prod"
+                        :target :nodejs
+                        :optimizations :advanced}}]}
   :figwheel {:css-dirs ["resources/public/css"]}
   :profiles {:dev
              {:repl-options
@@ -54,6 +60,6 @@
                [cemerick.piggieback/wrap-cljs-repl]}
               :dependencies
               [[com.cemerick/piggieback "0.2.1"]
-               [org.clojure/tools.nrepl "0.2.10"]
+               [org.clojure/tools.nrepl "0.2.12"]
                [figwheel "0.5.0-1"]]
-              :source-paths ["lambda" "frontend"]}})
+              :source-paths ["lambda/src" "lambda/test" "frontend"]}})

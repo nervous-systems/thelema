@@ -35,7 +35,10 @@
   [{:keys  [next-page-token items]
     {:keys [total-results]} :page-info}]
   (with-meta
-    (map parse-search-result items)
+    (map-indexed
+     (fn [i r]
+       (assoc (parse-search-result r) :thelema/index i))
+     items)
     {:token next-page-token
      :count total-results}))
 
