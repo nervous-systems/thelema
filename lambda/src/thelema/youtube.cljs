@@ -3,13 +3,16 @@
             [cljs.nodejs :as nodejs]
             [glossop.core :as g :refer-macros [go-catching <?]]
             [glossop.util :as g.util]
-            [thelema.http :as http]
+            [thelema.http]
+            [cljs-http.client :as http]
             [thelema.util :as util]
             [plumbing.core :as plumbing :refer-macros [for-map]]
             [thelema.youtube.util :refer
              [parse-format video-search-url parse-search-results]]))
 
 (def ytdl (nodejs/require "ytdl-core"))
+
+(thelema.http/set-global-xhr-factory!)
 
 (defn get-video-formats!
   "Video map -> channel of format maps"
@@ -55,20 +58,19 @@
   (let [chan (or chan (async/chan))]
     (go-catching
       (try
-        (let [videos
-              (-> term
-                  (video-search-url {:max-results results})
-                  http/get!
-                  <?
-                  util/json->map
-                  parse-search-results)]
+        (let [url (video-search-url term {:max-results results})
+              videos (-> (http/request {:method :get :url url})
+                         <?
+                         :body
+                         util/->kebab-map
+                         parse-search-results)]
           (async/onto-chan chan videos close?))
         (catch :default e
           (util/channel-error e chan close?))))
     chan))
 
 (defn search! [term & [{:keys [results formats chan close?]
-                     :or   {formats 5 results 10 close? true}}]]
+                        :or   {formats 5 results 10 close? true}}]]
   (let [chan (or chan (async/chan))]
     (go-catching
       (try

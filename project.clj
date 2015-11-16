@@ -17,7 +17,8 @@
             [io.nervous/lein-cljs-lambda "0.2.4"]
             [lein-cljsbuild "1.1.1-SNAPSHOT"]
             [lein-figwheel "0.5.0-1"]]
-  :npm {:dependencies [[ytdl-core "0.7.6"]]}
+  :npm {:dependencies [[ytdl-core "0.7.6"]
+                       [xmlhttprequest "1.8.0"]]}
   :clean-targets ^{:protect false} ["resources/public/js/compiled"
                                     "resources/public/js/thelema.js"
                                     :target-path]
