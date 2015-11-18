@@ -5,7 +5,8 @@
             [thelema.youtube :as youtube]
             [thelema.util    :as util]))
 
-(set! *main-cli-fn* identity)
+(when-not *main-cli-fn*
+  (set! *main-cli-fn* identity))
 
 (def ^:export audio-search
   (async-lambda-fn

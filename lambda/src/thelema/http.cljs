@@ -21,3 +21,8 @@
 
 (defn set-global-xhr-factory! []
   (.setGlobalFactory XmlHttp (NodeXhrFactory.)))
+
+(defn response->body [{:keys [body status] :as req}]
+  (if (<= 200 status 299)
+    body
+    (throw (ex-info "HTTP error" req))))

@@ -13,5 +13,6 @@
             (try
               (<? (do ~@forms))
               (catch :default e#
+                (println (.. e# -stack))
                 (cljs.test/is (nil? e#))))
             (done#))))))

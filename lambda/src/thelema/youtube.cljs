@@ -61,7 +61,7 @@
         (let [url (video-search-url term {:max-results results})
               videos (-> (http/request {:method :get :url url})
                          <?
-                         :body
+                         thelema.http/response->body
                          util/->kebab-map
                          parse-search-results)]
           (async/onto-chan chan videos close?))
@@ -74,9 +74,10 @@
   (let [chan (or chan (async/chan))]
     (go-catching
       (try
-        (-> term
-            (search-term->videos! {:results results})
-            (format-many! {:limit formats :chan chan :close? close?}))
+        (let [videos (search-term->videos! term {:results results})]
+          (if formats
+            (format-many! videos {:limit formats :chan chan :close? close?})
+            (async/pipe videos chan close?)))
         (catch :default e
           (util/channel-error e chan close?))))
     chan))

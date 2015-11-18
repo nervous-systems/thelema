@@ -13,7 +13,9 @@
 
 #? (:clj
     (defmacro compile-env [env-var]
-      (get (System/getenv) env-var)))
+      (or (not-empty (get (System/getenv) env-var))
+          (throw (ex-info "Missing env var"
+                          {:type :missing-env-var :var env-var})))))
 
 (def ->kebab-map (partial transform-keys csk/->kebab-case-keyword))
 (def ->camel-map (partial transform-keys csk/->camelCaseKeyword))

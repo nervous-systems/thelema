@@ -61,7 +61,14 @@
                         :output-dir "target/test-dev"
                         :target :nodejs
                         :optimizations :none
-                        :main "thelema.test.runner"}}]}
+                        :main "thelema.test.runner"}}
+            {:id "lambda-test-prod"
+             :source-paths ["lambda/src" "lambda/test"]
+             :notify-command ["node" "target/test-prod/thelema-test.js"]
+             :compiler {:output-to "target/test-prod/thelema-test.js"
+                        :output-dir "target/test-prod"
+                        :target :nodejs
+                        :optimizations :advanced}}]}
   :figwheel {:css-dirs ["resources/public/css"]}
   :profiles {:dev
              {:repl-options

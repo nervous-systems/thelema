@@ -8,15 +8,16 @@
             [thelema.youtube :as youtube]))
 
 (defn any-video! [& [arg]]
-  (youtube/search! "horseback chanting out" (merge {:results 1} arg)))
+  (youtube/search! "horseback chanting out"
+                   (merge {:results 1 :formats false} arg)))
 
 (deftest-async ^:integration search!
   (go-catching
-    (let [[{:keys [title url thumbnail formats] :as video} & videos]
+    (let [[{:keys [title url thumbnail] :as video} & videos]
           (<? (g.util/into []
-                (youtube/search! "the fall tempo house" {:results 5 :formats 5})))]
+                (youtube/search! "the fall tempo house"
+                                 {:results 5 :formats false})))]
       (is (= (- 5 1) (count videos)))
-      (is (= 5       (count formats)))
       (is (and (not-empty title)
                (not-empty url)
                (not-empty thumbnail)) (keys video)))))
