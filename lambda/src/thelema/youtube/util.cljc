@@ -2,7 +2,7 @@
   "Platform-neutral data transformations, mostly"
   (:require [clojure.set :as set]
             [cemerick.url :refer [url]]
-            [thelema.util :refer [->camel-map]]))
+            [thelema.util :refer [->camel-map log]]))
 
 (def API-KEY (thelema.util/compile-env "THELEMA_YT_API_KEY"))
 
@@ -13,7 +13,9 @@
 
 (def search-params {:part "snippet" :max-results 50 :type "video" :key API-KEY})
 (defn video-search-url [q & [attrs]]
-  (search-url (merge search-params (assoc attrs :q q))))
+  (let [search-url (search-url (merge search-params (assoc attrs :q q)))]
+    (log "Video search URL" search-url)
+    search-url))
 
 (defn parse-format [m]
   (-> m
@@ -26,7 +28,7 @@
   [{{:keys [video-id]} :id
     {:keys [title description] {{thumbnail :url} :high} :thumbnails} :snippet}]
   {:id video-id
-   :url (video-url {:v video-id})
+   :url (str (video-url {:v video-id}))
    :title title
    :description description
    :thumbnail thumbnail})

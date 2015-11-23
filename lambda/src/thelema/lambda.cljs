@@ -12,4 +12,5 @@
   (async-lambda-fn
    (fn [{:keys [term] :as args} context]
      (util/log "audio-search" (str "'" term "'") args)
-     (async/into [] (youtube/search! term)))))
+     (async/into [] (youtube/search!
+                     term (merge {:formats false} args))))))

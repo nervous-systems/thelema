@@ -1,17 +1,21 @@
 (defproject thelema "0.1.0-SNAPSHOT"
   :license {:name "Unlicense" :url "http://unlicense.org/UNLICENSE"}
   :source-paths ["frontend" "lambda"]
-  :dependencies [[org.clojure/clojure        "1.7.0"]
-                 [org.clojure/core.async     "0.2.374"]
-                 [org.clojure/clojurescript  "1.7.170"]
-                 [io.nervous/eulalie     "0.6.3"]
-                 [io.nervous/cljs-lambda "0.1.2"]
+  :dependencies [[org.clojure/clojure            "1.7.0"]
+                 [org.clojure/core.async         "0.2.374"]
+                 [org.clojure/clojurescript      "1.7.170"]
+                 [io.nervous/cljs-lambda         "0.1.2"]
+                 [io.nervous/glossop             "0.2.1"]
+                 [io.nervous/cljs-nodejs-externs "0.1.0"]
                  [camel-snake-kebab      "0.3.2"]
+                 [prismatic/plumbing     "0.4.4"]
 
-                 [cljsjs/react  "0.14.0-1"]
-                 [reagent       "0.5.1" :exclusions [cljsjs/react]]
-                 [secretary     "1.2.3"]
-                 [cljs-http     "0.1.37"]]
+                 [cljsjs/react     "0.14.0-1"]
+                 [reagent          "0.5.1" :exclusions [cljsjs/react]]
+                 [reagent-forms    "0.5.13"]
+                 [secretary        "1.2.3"]
+                 [cljs-http        "0.1.37"]
+                 [com.cemerick/url "0.1.1"]]
   :exclusions [org.clojure/clojure]
   :plugins [[lein-npm "0.6.0"]
             [io.nervous/lein-cljs-lambda "0.2.4"]
@@ -34,11 +38,11 @@
   :cljsbuild
   {:builds [{:id "frontend-dev"
              :source-paths ["frontend"]
-             :figwheel {:on-jsload "thelema.core/mount-root"}
+             :figwheel {:on-jsload "thelema.frontend.core/mount-root"}
              :compiler {:output-to "resources/public/js/compiled/thelema.js"
                         :output-dir "resources/public/js/compiled/out-dev"
                         :asset-path "js/compiled/out-dev"
-                        :main thelema.core
+                        :main thelema.frontend.core
                         :optimizations :none
                         :source-map true}}
             {:id "lambda-dev"

@@ -1,6 +1,7 @@
 (ns thelema.http
   (:import [goog.net XmlHttp XmlHttpFactory])
-  (:require [cljs.nodejs :as nodejs]))
+  (:require [cljs.nodejs :as nodejs]
+            [cljs.core.async :as async]))
 
 (def xml-http-request
   (-> (nodejs/require "xmlhttprequest")
@@ -22,7 +23,9 @@
 (defn set-global-xhr-factory! []
   (.setGlobalFactory XmlHttp (NodeXhrFactory.)))
 
-(defn response->body [{:keys [body status] :as req}]
+(defn unwrap-response [{:keys [body status] :as resp}]
   (if (<= 200 status 299)
     body
-    (throw (ex-info "HTTP error" req))))
+    (ex-info "HTTP error" req)))
+
+(def response-chan (partial async/chan 1 (map unwrap-response)))
