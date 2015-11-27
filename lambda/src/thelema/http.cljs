@@ -26,6 +26,6 @@
 (defn unwrap-response [{:keys [body status] :as resp}]
   (if (<= 200 status 299)
     body
-    (ex-info "HTTP error" req)))
+    (ex-info "HTTP error" resp)))
 
 (def response-chan (partial async/chan 1 (map unwrap-response)))

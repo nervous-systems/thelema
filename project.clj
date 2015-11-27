@@ -4,7 +4,7 @@
   :dependencies [[org.clojure/clojure            "1.7.0"]
                  [org.clojure/core.async         "0.2.374"]
                  [org.clojure/clojurescript      "1.7.170"]
-                 [io.nervous/cljs-lambda         "0.1.2"]
+                 [io.nervous/cljs-lambda         "0.1.3-SNAPSHOT"]
                  [io.nervous/glossop             "0.2.1"]
                  [io.nervous/cljs-nodejs-externs "0.1.0"]
                  [camel-snake-kebab      "0.3.2"]
@@ -34,7 +34,9 @@
     :timeout 60}
    :functions
    [{:name   "audio-search"
-     :invoke thelema.lambda/audio-search}]}
+     :invoke thelema.lambda/audio-search}
+    {:name   "audio-formats"
+     :invoke thelema.lambda/audio-formats}]}
   :cljsbuild
   {:builds [{:id "frontend-dev"
              :source-paths ["frontend"]
